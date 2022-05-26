@@ -24,7 +24,7 @@ namespace Mp3YTConverter
             InitializeComponent();
         }
 
-        private async void Form1_Load(object sender, EventArgs e)
+        private void Form1_Load(object sender, EventArgs e)
         {
            
         }
@@ -182,7 +182,7 @@ namespace Mp3YTConverter
 
         private void ComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+          //  throw new NotImplementedException();
         }
 
         static string ConvertToSize(long videolength)
@@ -234,22 +234,22 @@ namespace Mp3YTConverter
         }
 
         private void DeleteImage_Click(object sender, EventArgs e)
-        {
+        {         
             PictureBox pictureBox = sender as PictureBox;
             Control mainCTRL = pictureBox.Tag as Control;
+            BackgroundWorker bgw = mainCTRL.Tag as BackgroundWorker;
+            bgw.CancelAsync();
             flowLayoutPanel1.Controls.Remove(mainCTRL);
         }
 
         private void DownloadImage_Click(object sender, EventArgs e)
         {
             List<object> arguments = new List<object>();
-           
-          
+            PictureBox clicked = sender as PictureBox;
+            clicked.Visible = false;
+        
+ 
 
-
-          
-
-            PictureBox clicked = sender as PictureBox;    
             var video = VideoLibrary.YouTube.Default.GetVideo(clicked.Tag.ToString());      
             bw = new BackgroundWorker();
             bw.WorkerReportsProgress = true;
@@ -264,6 +264,9 @@ namespace Mp3YTConverter
 
 
             bw.RunWorkerAsync(arguments);
+
+
+            getHeaderPanel(clicked).Tag = bw;
 
 
 
@@ -316,6 +319,22 @@ namespace Mp3YTConverter
             return main;
         }
 
+
+        private MetroFramework.Controls.MetroPanel getHeaderPanel(Control clickedDownlodButton)
+        {
+            MetroFramework.Controls.MetroPanel main = null;
+            foreach (MetroFramework.Controls.MetroPanel header in flowLayoutPanel1.Controls)
+            {
+                if (header.Controls.Contains(clickedDownlodButton))
+                {                   
+                    main = header;                                         
+                    break;
+                }
+            }
+            return main;
+        }
+
+
         private void bw_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
         }
@@ -329,36 +348,71 @@ namespace Mp3YTConverter
             List<object> argumentsList = e.Argument as List<object>;
             var video = (VideoLibrary.YouTubeVideo)argumentsList[0];
             var comboBox = (MetroFramework.Controls.MetroComboBox)argumentsList[2];
+            var clickedDownloadButton = (PictureBox)argumentsList[1];
+             
             
 
 
+            //MetroFramework.Controls.MetroProgressSpinner loadingSpinner = new MetroFramework.Controls.MetroProgressSpinner();
+            //loadingSpinner.Location = new Point(clickedDownloadButton.Location.X, clickedDownloadButton.Location.Y);
+            //loadingSpinner.Size = new Size(clickedDownloadButton.Size.Width, clickedDownloadButton.Size.Height);
+            //loadingSpinner.Style = MetroColorStyle.Blue;
+            //loadingSpinner.Theme = MetroThemeStyle.Dark;
+            //getHeaderPanel(clickedDownloadButton).Invoke(new MethodInvoker(delegate () { getHeaderPanel(clickedDownloadButton).Controls.Add(loadingSpinner); }));
+
+
+        
             byte[] bytes = video.GetBytes();
 
-            using (var writer = new BinaryWriter(System.IO.File.Open(Application.StartupPath + "\\" + video.FullName, FileMode.Create)))
+            try
             {
-                var bytesLeft = bytes.Length;
-                var bytesWritten = 0;
-                while (bytesLeft > 0)
+
+                using (var writer = new BinaryWriter(System.IO.File.Open(Application.StartupPath + "\\" + video.FullName, FileMode.Create)))
                 {
-                    int chunk = Math.Min(64, bytesLeft);
-
-                    writer.Write(bytes, bytesWritten, chunk);
-                    bytesWritten += chunk;
-                    bytesLeft -= chunk;
-
-
-                    Console.WriteLine(bytesWritten * 100 / bytes.Length + " %");
- 
-                    getProgessBarNeedToUpdate((Control)argumentsList[1]).Invoke(new MethodInvoker(delegate () { getProgessBarNeedToUpdate((Control)argumentsList[1]).Value = bytesWritten * 100 / bytes.Length; }));
-
-                    if (bytesWritten * 100 / bytes.Length >= 100)
+                    var bytesLeft = bytes.Length;
+                    var bytesWritten = 0;
+                    while (bytesLeft > 0)
                     {
-                        var selectedFormat = (string)comboBox.Invoke((Func<string>)delegate { return comboBox.SelectedItem.ToString(); });
-                        YouTube.AudioConvert(Application.StartupPath + "\\" + video.FullName, Application.StartupPath + "\\Converted\\" + video.Info.Title + "." + selectedFormat, selectedFormat);                            
-                        Console.WriteLine("Done! Converting to " + selectedFormat);                      
+                        int chunk = Math.Min(64, bytesLeft);
+
+                        writer.Write(bytes, bytesWritten, chunk);
+                        bytesWritten += chunk;
+                        bytesLeft -= chunk;
+                        
+
+                        try
+                        {
+                            getProgessBarNeedToUpdate((Control)argumentsList[1]).Invoke(new MethodInvoker(delegate () { getProgessBarNeedToUpdate((Control)argumentsList[1]).Value = bytesWritten * 100 / bytes.Length; }));
+                        }
+                        catch
+                        {
+                            writer.Dispose();
+                            writer.Close();
+                        }
+
+
+                        if (bytesWritten * 100 / bytes.Length >= 100)
+                        {
+                            clickedDownloadButton.Invoke(new MethodInvoker(delegate ()
+                            {
+                                clickedDownloadButton.Visible = true;
+                            }));
+
+
+
+                            var selectedFormat = (string)comboBox.Invoke((Func<string>)delegate { return comboBox.SelectedItem.ToString(); });
+                            // YouTube.AudioConvert(Application.StartupPath + "\\" + video.FullName, Application.StartupPath + "\\Converted\\" + video.Info.Title + "." + selectedFormat, selectedFormat);                            
+                            Console.WriteLine("Done! Converting to " + selectedFormat);
+
+                            writer.Dispose();
+                            writer.Close();
+                            e.Cancel = true;
+                            
+                        }
                     }
                 }
-            }         
+            }
+            catch { }
         }
 
 
@@ -398,6 +452,11 @@ namespace Mp3YTConverter
         }
 
         private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void pictureBox3_Click(object sender, EventArgs e)
         {
 
         }
