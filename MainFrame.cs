@@ -26,7 +26,19 @@ namespace Mp3YTConverter
 
         private void Form1_Load(object sender, EventArgs e)
         {
-           
+            if (Mp3YTConverter.Properties.Settings.Default.downloadPath == "" || string.IsNullOrWhiteSpace(Mp3YTConverter.Properties.Settings.Default.downloadPath))
+            {
+                using (var fbd = new FolderBrowserDialog())
+                {
+                    fbd.Description = "Select the path where the files should be downloaded to";
+                    DialogResult result = fbd.ShowDialog();
+                    if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
+                    {
+                        Mp3YTConverter.Properties.Settings.Default.downloadPath = fbd.SelectedPath;
+                        Mp3YTConverter.Properties.Settings.Default.Save();
+                    }
+                }
+            }          
         }
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -238,7 +250,10 @@ namespace Mp3YTConverter
             PictureBox pictureBox = sender as PictureBox;
             Control mainCTRL = pictureBox.Tag as Control;
             BackgroundWorker bgw = mainCTRL.Tag as BackgroundWorker;
-            bgw.CancelAsync();
+            if (bgw != null)
+            {
+                bgw.CancelAsync();
+            }           
             flowLayoutPanel1.Controls.Remove(mainCTRL);
         }
 
@@ -367,7 +382,7 @@ namespace Mp3YTConverter
             try
             {
 
-                using (var writer = new BinaryWriter(System.IO.File.Open(Application.StartupPath + "\\" + video.FullName, FileMode.Create)))
+                using (var writer = new BinaryWriter(System.IO.File.Open(Mp3YTConverter.Properties.Settings.Default.downloadPath + "\\" + video.FullName, FileMode.Create)))
                 {
                     var bytesLeft = bytes.Length;
                     var bytesWritten = 0;
@@ -401,7 +416,7 @@ namespace Mp3YTConverter
 
 
                             var selectedFormat = (string)comboBox.Invoke((Func<string>)delegate { return comboBox.SelectedItem.ToString(); });
-                            // YouTube.AudioConvert(Application.StartupPath + "\\" + video.FullName, Application.StartupPath + "\\Converted\\" + video.Info.Title + "." + selectedFormat, selectedFormat);                            
+                            // YouTube.AudioConvert(Mp3YTConverter.Properties.Settings.Default.downloadPath + "\\" + video.FullName, Mp3YTConverter.Properties.Settings.Default.downloadPath + "\\" + video.Info.Title + "." + selectedFormat, selectedFormat);                            
                             Console.WriteLine("Done! Converting to " + selectedFormat);
 
                             writer.Dispose();
