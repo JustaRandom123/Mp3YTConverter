@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 // Attribute gesteuert. Ändern Sie diese Attributwerte, um die Informationen zu ändern,
 // die einer Assembly zugeordnet sind.
 [assembly: AssemblyTitle("Mp3YTConverter")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Converts any YT Video in a specific selected codec like mp3")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("JustaRandom")]
 [assembly: AssemblyProduct("Mp3YTConverter")]
 [assembly: AssemblyCopyright("Copyright ©  2022")]
 [assembly: AssemblyTrademark("")]

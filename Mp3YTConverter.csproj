@@ -40,6 +40,9 @@
   <PropertyGroup>
     <ApplicationIcon>logo.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>Mp3YTConverter.Program</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="libvideo, Version=3.1.9.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\VideoLibrary.3.1.9\lib\netstandard1.3\libvideo.dll</HintPath>
