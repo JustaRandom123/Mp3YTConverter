@@ -221,29 +221,29 @@ namespace Mp3YTConverter
             return value;
         }
 
-        static int CountChars(string value)
-        {
-            int result = 0;
-            bool lastWasSpace = false;
+        //static int CountChars(string value)
+        //{
+        //    int result = 0;
+        //    bool lastWasSpace = false;
 
-            foreach (char c in value)
-            {
-                if (char.IsWhiteSpace(c))
-                {                    
-                    if (lastWasSpace == false)
-                    {
-                        result++;
-                    }
-                    lastWasSpace = true;
-                }
-                else
-                {                 
-                    result++;
-                    lastWasSpace = false;
-                }
-            }
-            return result;
-        }
+        //    foreach (char c in value)
+        //    {
+        //        if (char.IsWhiteSpace(c))
+        //        {                    
+        //            if (lastWasSpace == false)
+        //            {
+        //                result++;
+        //            }
+        //            lastWasSpace = true;
+        //        }
+        //        else
+        //        {                 
+        //            result++;
+        //            lastWasSpace = false;
+        //        }
+        //    }
+        //    return result;
+        //}
 
         private void DeleteImage_Click(object sender, EventArgs e)
         {         
@@ -413,16 +413,30 @@ namespace Mp3YTConverter
                                 clickedDownloadButton.Visible = true;
                             }));
 
-
-
                             var selectedFormat = (string)comboBox.Invoke((Func<string>)delegate { return comboBox.SelectedItem.ToString(); });
-                            // YouTube.AudioConvert(Mp3YTConverter.Properties.Settings.Default.downloadPath + "\\" + video.FullName, Mp3YTConverter.Properties.Settings.Default.downloadPath + "\\" + video.Info.Title + "." + selectedFormat, selectedFormat);                            
-                            Console.WriteLine("Done! Converting to " + selectedFormat);
+
+                                          
+                           
 
                             writer.Dispose();
                             writer.Close();
                             e.Cancel = true;
-                            
+
+                            try
+                            {
+                                var ffMpeg = new NReco.VideoConverter.FFMpegConverter();
+                                ffMpeg.ConvertMedia(Mp3YTConverter.Properties.Settings.Default.downloadPath + "\\" + video.FullName, Mp3YTConverter.Properties.Settings.Default.downloadPath + "\\" + video.FullName.Replace("mp4", selectedFormat), selectedFormat);
+                                File.Delete(Mp3YTConverter.Properties.Settings.Default.downloadPath + "\\" + video.FullName);
+                                Console.WriteLine("Done! Converting to " + selectedFormat);
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine(ex.ToString());
+                            }
+
+
+                           
+
                         }
                     }
                 }
