@@ -31,6 +31,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainFrame));
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.metroPanel1 = new MetroFramework.Controls.MetroPanel();
+            this.label7 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.metroComboBox1 = new MetroFramework.Controls.MetroComboBox();
             this.label5 = new System.Windows.Forms.Label();
@@ -62,6 +63,7 @@
             // 
             // metroPanel1
             // 
+            this.metroPanel1.Controls.Add(this.label7);
             this.metroPanel1.Controls.Add(this.label6);
             this.metroPanel1.Controls.Add(this.metroComboBox1);
             this.metroPanel1.Controls.Add(this.label5);
@@ -87,6 +89,17 @@
             this.metroPanel1.VerticalScrollbarHighlightOnWheel = false;
             this.metroPanel1.VerticalScrollbarSize = 10;
             this.metroPanel1.Visible = false;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label7.ForeColor = System.Drawing.Color.White;
+            this.label7.Location = new System.Drawing.Point(584, 36);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(119, 14);
+            this.label7.TabIndex = 13;
+            this.label7.Text = "Status: Downloading";
             // 
             // label6
             // 
@@ -302,6 +315,7 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label6;
         private MetroFramework.Controls.MetroComboBox metroComboBox1;
+        private System.Windows.Forms.Label label7;
     }
 }
 

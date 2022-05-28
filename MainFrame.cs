@@ -115,10 +115,21 @@ namespace Mp3YTConverter
             bitrate.Font = new Font(generalFont, FontStyle.Bold);
 
 
+
+            Label status = new Label();
+            status.Text = "Status: ";
+            status.Location = new Point(584, 36);
+            status.Size = new Size(125, 14);
+            status.ForeColor = Color.White;
+            status.Font = new Font(generalFont, FontStyle.Bold);
+            status.Tag = "statusLabel";
+
+
+
             Label convertTo = new Label();
             convertTo.Text = "Convert to";
             convertTo.Location = new Point(773, 29);
-            convertTo.Size = new Size(72,16);
+            convertTo.Size = new Size(75, 16);
             convertTo.ForeColor = Color.White;
             convertTo.Font = new Font(titelFont, FontStyle.Bold);
 
@@ -185,6 +196,7 @@ namespace Mp3YTConverter
             header.Controls.Add(bitrate);
             header.Controls.Add(comboBox);
             header.Controls.Add(convertTo);
+            header.Controls.Add(status);
           
 
 
@@ -350,33 +362,46 @@ namespace Mp3YTConverter
         }
 
 
+        private Label getStatusLabel(Control clickedDownlodButton)
+        {
+            Label main = null;
+            foreach (MetroFramework.Controls.MetroPanel header in flowLayoutPanel1.Controls)
+            {
+                if (header.Controls.Contains(clickedDownlodButton))
+                {
+                    foreach (Control ctrl in header.Controls)
+                    {
+                        if (ctrl.ToString().Contains("Label") && ctrl.Tag != null && ctrl.Tag.ToString() == "statusLabel")
+                        {             
+                            main = ctrl as Label;
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+            return main;
+        }
+
+
         private void bw_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
         }
 
 
+
+
    
-
-
         private void bw_DoWork(object sender, DoWorkEventArgs e)
         {     
             List<object> argumentsList = e.Argument as List<object>;
             var video = (VideoLibrary.YouTubeVideo)argumentsList[0];
             var comboBox = (MetroFramework.Controls.MetroComboBox)argumentsList[2];
             var clickedDownloadButton = (PictureBox)argumentsList[1];
-             
-            
+
+            getStatusLabel(clickedDownloadButton).Invoke(new MethodInvoker(delegate () { getStatusLabel(clickedDownloadButton).Text = "Status: Downloading"; }));
 
 
-            //MetroFramework.Controls.MetroProgressSpinner loadingSpinner = new MetroFramework.Controls.MetroProgressSpinner();
-            //loadingSpinner.Location = new Point(clickedDownloadButton.Location.X, clickedDownloadButton.Location.Y);
-            //loadingSpinner.Size = new Size(clickedDownloadButton.Size.Width, clickedDownloadButton.Size.Height);
-            //loadingSpinner.Style = MetroColorStyle.Blue;
-            //loadingSpinner.Theme = MetroThemeStyle.Dark;
-            //getHeaderPanel(clickedDownloadButton).Invoke(new MethodInvoker(delegate () { getHeaderPanel(clickedDownloadButton).Controls.Add(loadingSpinner); }));
-
-
-        
             byte[] bytes = video.GetBytes();
 
             try
@@ -408,6 +433,9 @@ namespace Mp3YTConverter
 
                         if (bytesWritten * 100 / bytes.Length >= 100)
                         {
+
+                            getStatusLabel(clickedDownloadButton).Invoke(new MethodInvoker(delegate () { getStatusLabel(clickedDownloadButton).Text = "Status: Converting"; }));
+
                             clickedDownloadButton.Invoke(new MethodInvoker(delegate ()
                             {
                                 clickedDownloadButton.Visible = true;
@@ -427,6 +455,8 @@ namespace Mp3YTConverter
                                 var ffMpeg = new NReco.VideoConverter.FFMpegConverter();
                                 ffMpeg.ConvertMedia(Mp3YTConverter.Properties.Settings.Default.downloadPath + "\\" + video.FullName, Mp3YTConverter.Properties.Settings.Default.downloadPath + "\\" + video.FullName.Replace("mp4", selectedFormat), selectedFormat);
                                 File.Delete(Mp3YTConverter.Properties.Settings.Default.downloadPath + "\\" + video.FullName);
+
+                                getStatusLabel(clickedDownloadButton).Invoke(new MethodInvoker(delegate () { getStatusLabel(clickedDownloadButton).Text = "Status: Done!"; }));
                                 Console.WriteLine("Done! Converting to " + selectedFormat);
                             }
                             catch (Exception ex)
