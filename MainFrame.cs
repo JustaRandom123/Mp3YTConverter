@@ -46,6 +46,26 @@ namespace Mp3YTConverter
 
         }
 
+        MetroFramework.Controls.MetroLabel loadingText { get; set; } 
+
+
+        private void loading()
+        {
+            loadingText = new MetroFramework.Controls.MetroLabel();
+            loadingText.Style = MetroColorStyle.Silver;
+            loadingText.Theme = MetroThemeStyle.Dark;
+            loadingText.Text = "Loading...";
+            loadingText.FontSize = MetroLabelSize.Tall;
+            loadingText.Location = new Point(this.Width/2 - 40, this.Height/2 - 10);
+            loadingText.Size = new Size(105, 25);          
+            this.Controls.Add(loadingText);
+            loadingText.BringToFront();          
+        }
+
+        private void removeLoading()
+        {
+            this.Controls.Remove(loadingText);
+        }
 
      
 
@@ -477,8 +497,12 @@ namespace Mp3YTConverter
 
         private void metroButton1_Click(object sender, EventArgs e)
         {
+            loading();
+
             var video = YouTube.getVideoInformations(metroTextBox1.Text);
             panelCreater(video.Info.Title, video.Info.LengthSeconds.Value, video.ContentLength.Value, metroTextBox1.Text, video.AudioBitrate.ToString(),video.AudioFormat.ToString(), getVideoIdByURL(metroTextBox1.Text));
+
+            removeLoading();
         }
 
 
